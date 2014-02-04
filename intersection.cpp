@@ -43,6 +43,8 @@ void Intersection::add_Impedance(Impedance *nimp){
 void Intersection::update_Local_Ids(){
 	Port *temp_port;
 	Impedance *tempi;
+	portmap.clear();//reinitializes variables
+	impmap.clear();
 	Ids = 1;
 	for (vector<Port *>::iterator it = ports.begin() ; it != ports.end(); ++it){
                         temp_port= *it;

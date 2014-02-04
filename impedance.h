@@ -1,6 +1,13 @@
 #ifndef IMPEDANCE_H
 #define IMPEDANCE_H
 #include <complex>
+#include <vector>
+#include <Eigen/Dense>
+#include <cmath>
+#define PI 3.1415926535897932384626433832795
+
+using namespace std;
+using Eigen::MatrixXcf;
 
 class Impedance{
 
@@ -11,12 +18,18 @@ private:
 	std::complex<float> impedance;
 	int node1_xid; //sets the intersection id of the node
 	int node2_xid; //sets the intersection id of the node
+	
+	vector<int> *intersections;	
 
 
 	int node1_Global_Id;
 	int node2_Global_Id;	
 	
 	int x_Local_Id;
+
+	float Alpha;
+	float Beta;
+	float Length;
 
 
 public:
@@ -45,15 +58,32 @@ public:
         Impedance::IMPEDANCE_TYPES get_Lumped(){return lumped;}
 	int get_Type(){return imp_type;}
 
+	void set_Alpha(float alpha){ Alpha = alpha;}
+	void set_Beta(float beta){ Beta = beta;}
+	float get_Alpha(){return Alpha;}
+	float get_Beta(){return Beta;}
+
 
 	void set_node_xid(int, int);
 	int get_Node_Xid(int);
+	
+	void add_Intersection(int);
+	vector<int>* get_Intersections();
+
+	MatrixXcf get_Cmat();
 
 
-	Impedance();
-        Impedance(IMPEDANCE_TYPES type, std::complex<float> n_imp){
+	Impedance();//default constructor
+        Impedance(IMPEDANCE_TYPES type, std::complex<float> n_imp){ //primarily for lumped
                	impedance = n_imp; 
 		check_imp_type(type);
+        }
+
+	Impedance(IMPEDANCE_TYPES type, std::complex<float> n_imp,float nlength){ //for tline,cline,qline
+                impedance = n_imp;
+                check_imp_type(type);
+		Length = nlength;
+		Alpha = 0.0; //default alpha to 0 for tline, lossless
         }
 
 

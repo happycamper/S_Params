@@ -4,6 +4,8 @@
 #include "port.cpp"
 #include "intersection.h"
 #include "intersection.cpp"
+#include "circuit_handler.h"
+#include "circuit_handler.cpp"
 #include <iostream> 
 #include <vector>
 
@@ -11,19 +13,28 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+
+	vector<Port *> portsG;
+	vector<Impedance *> impedancesG;
+	vector<Intersection *> intersectionsG;
+
 	//declaration of ports
 	Port *p1 = new Port(1,std::complex<float>(50.0,0));
 	Port *p2 = new Port(2,std::complex<float>(50.0,0));
 	Port *p3 = new Port(3,std::complex<float>(50.0,0));
 
 	p1->set_Node_Xid(1); //sets the intersection id
-	p1->set_Node_Xid(2);
-	p1->set_Node_Xid(3);
+	p2->set_Node_Xid(2);
+	p3->set_Node_Xid(3);
 
-	Impedance *i1 = new Impedance((Impedance::IMPEDANCE_TYPES) 1, std::complex<float>(71.0,0)); //first tline
-	Impedance *i2 = new Impedance((Impedance::IMPEDANCE_TYPES) 1, std::complex<float>(71.0,0)); //second tline
+	portsG.push_back(p1);
+	portsG.push_back(p2);
+	portsG.push_back(p3);
+
+	Impedance *i1 = new Impedance((Impedance::IMPEDANCE_TYPES) 1, std::complex<float>(71.0,0),0.25); //first tline
+	Impedance *i2 = new Impedance((Impedance::IMPEDANCE_TYPES) 1, std::complex<float>(71.0,0),0.25); //second tline
 	Impedance *i3 = new Impedance((Impedance::IMPEDANCE_TYPES) 0, std::complex<float>(100.0,0)); //first tline
-	
+		
 	vector<Port *> ports;
 	vector<Port *> ports2;
 	vector<Port *> ports3;
@@ -55,10 +66,20 @@ int main(int argc, char **argv)
 
 	X3->set_Ports(ports3);
 	X3->set_Impedances(X3impedances);
+
+	impedancesG.push_back(i1);
+	impedancesG.push_back(i2);
+	impedancesG.push_back(i3);
+
+	intersectionsG.push_back(X1);
+	intersectionsG.push_back(X2);
+	intersectionsG.push_back(X3);
+
+	Circuit_Handler *ch = new Circuit_Handler(intersectionsG,portsG,impedancesG);
 		
 
 	//temp = i->get_Type();
-	cout << X2->calc_X() << endl;  
+	cout << ch->calc_X() << endl;  
 	
 	return 0;
 }
