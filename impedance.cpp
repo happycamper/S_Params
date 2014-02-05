@@ -10,7 +10,22 @@ void Impedance::init_values(){
 	imp_type = lumped;
 }
 
-void Impedance::set_node_xid(int node, int id){
+void Impedance::init_Lumped(){
+	num_of_ports = 2;
+}
+
+void Impedance::init_T_Line(){
+	Alpha = 0.0;
+	Beta = 2.0*PI;
+	num_of_ports = 2;
+}
+
+void Impedance::init_Port(){
+	num_of_ports = 1;
+}
+
+
+/*void Impedance::set_node_xid(int node, int id){
 	
 	if(node == 1){
 		node1_xid = id;
@@ -31,9 +46,9 @@ int Impedance::get_Node_Xid(int node){
 	}else{
 		return 0;	
 	}
-}
+}*/
 
-int Impedance::get_Node_Global_Id(int id){
+/*int Impedance::get_Node_Global_Id(int id){
                 if(id == 1){
                         return node1_Global_Id;
                 }else if(id == 2){
@@ -42,7 +57,7 @@ int Impedance::get_Node_Global_Id(int id){
                         return 0;
                 }
 
-}
+}*/
 
 void Impedance::add_Intersection(int X_id){
 	intersections->push_back(X_id);
@@ -64,13 +79,15 @@ MatrixXcf Impedance::get_Cmat(){
 		return cret;	
 	}else if(imp_type == t_line){
 		MatrixXcf cret(2,2);
-		std::complex<float> zero(0.0,0.0);
+		cret.setZero();
 		float prop_alpha = exp(-1.0*Alpha);
-		std::complex<float> propagation = std::complex<float>(prop_alpha,0.0)*std::complex<float>(std::polar(1.0,-1.0*2.0*PI*Length));
-		cret(0,0) = zero;
-		cret(1,1) = zero;
+		std::complex<float> propagation = std::complex<float>(prop_alpha,0.0)*std::complex<float>(std::polar(1.0,-1.0*Beta*Length));
 		cret(1,0) = propagation;
 		cret(0,1) = propagation;	
+		return cret;
+	}else if(imp_type == port){
+		MatrixXcf cret(1,1);
+		cret.setZero();
 		return cret;
 	}else{
 		MatrixXcf cret(2,2);

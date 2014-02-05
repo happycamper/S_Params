@@ -3,6 +3,7 @@
 #include <complex>
 #include <Eigen/Dense>
 #include <vector>
+#include <map>
 
 using Eigen::MatrixXcf;
 
@@ -15,11 +16,15 @@ private:
 
 	int c_Rows;
 	int c_Cols;
-	int num_of_nodes;
+	int num_of_nodes;//total number of nodes
+	int gnc;//this assigns the global node count 
 
-	vector<Port *> ports;
+//	vector<Port *> ports;
 	vector<Impedance *> impedances;
 	vector<Intersection *> intersections;
+
+	map<const char*,vector<int> > global_tracker;//helps find impedances in graph based 
+				            //on UID and global assigned number
 
 	void calc_X_Rows();
 	void calc_X_Cols();
@@ -36,9 +41,11 @@ public:
 	int get_C_Cols(){return c_Cols;}
 
 	MatrixXcf calc_X();
+	MatrixXcf calc_C();
+	MatrixXcf calc_S();
 
 	Circuit_Handler();
-	Circuit_Handler(vector<Intersection *>,vector<Port *>,vector<Impedance *>);
+	Circuit_Handler(vector<Intersection *>,vector<Impedance *>);
 };
 
 #endif
