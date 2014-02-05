@@ -20,6 +20,7 @@ Circuit_Handler::Circuit_Handler(vector<Intersection *> n_intersections,vector<I
 		calc_X_Rows();
 		calc_X_Cols();
 		calc_Num_Nodes();
+		calc_Num_Ports();
 }
 
 void Circuit_Handler::calc_X_Rows(){
@@ -46,6 +47,17 @@ void Circuit_Handler::calc_Num_Nodes(){
         for (vector<Intersection *>::iterator it = intersections.begin() ; it != intersections.end(); ++it){
                         tempi = *it;
                         num_of_nodes += tempi->get_Conn_Nodes();
+        }
+}
+
+void Circuit_Handler::calc_Num_Ports(){
+	num_of_ports = 0;
+	Impedance *tempi;
+	for (vector<Impedance *>::iterator it = impedances.begin() ; it != impedances.end(); ++it){
+                        tempi = *it;
+			if(tempi->get_Type() == 0){
+				++num_of_ports;
+			}
         }
 }
 
@@ -88,6 +100,9 @@ MatrixXcf Circuit_Handler::calc_C(){
 				vector<int> existing; //to add to node info
 				if(tempMap.find(i) != tempMap.end()){ //impedance should exist here
 					tempImp = tempMap[i]; //get impedance
+					if(tempImp->get_Type() == 0){ //0 for port
+						ports.push_back(gnc);	
+					}
 					int numports = tempImp->get_Num_of_Ports(); //2 or 1 port
 					tempC.resize(numports,numports); //get ready to receive C
 					tempC = tempImp->get_Cmat(); //get impedance C matrix
@@ -132,10 +147,10 @@ MatrixXcf Circuit_Handler::calc_S(){
 	MatrixXcf I = MatrixXcf::Identity(num_of_nodes,num_of_nodes);
 	MatrixXcf X = calc_X();
 	MatrixXcf C = calc_C();
+	num_of_ports = ports.size();
 	MatrixXcf temp2(num_of_nodes,num_of_nodes);
 
 	MatrixXcf temp(num_of_nodes,num_of_nodes);
-	bool invertible;
 	temp = C*X;
 	temp = I - temp;
 	temp2 = temp.inverse();
@@ -143,4 +158,25 @@ MatrixXcf Circuit_Handler::calc_S(){
 	
 	return S;
 	
+}
+
+MatrixXcf Circuit_Handler::get_Port_Scattering(){
+	MatrixXcf S(num_of_nodes,num_of_nodes);
+//	int srowscols = ports.size();
+	MatrixXcf Scatter(num_of_ports,num_of_ports);
+	S = calc_S();
+	int m = 0;
+	 for(vector<int>::iterator it = ports.begin(); it != ports.end(); ++it){
+		int port1 = *it;
+		int matrow = port1-1;	
+		int n = 0;	
+		for(vector<int>::iterator et = ports.begin(); et != ports.end(); ++et){		
+			int port2 = *et;
+			int matcol = port2-1; //offset for matrix
+			Scatter(m,n) = S(matrow,matcol);
+			++n;			
+		}
+		++m;
+	}
+	return Scatter;
 }

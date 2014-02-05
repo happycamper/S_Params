@@ -8,6 +8,7 @@
 #include "circuit_handler.cpp"
 #include <iostream> 
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ int main(int argc, char **argv)
 //	vector<Port *> portsG;
 	vector<Impedance *> impedancesG;
 	vector<Intersection *> intersectionsG;
+	
 
 	//declaration of ports
 //	Port *p1 = new Port(1,std::complex<float>(50.0,0));
@@ -88,9 +90,9 @@ int main(int argc, char **argv)
 
 	Circuit_Handler *ch = new Circuit_Handler(intersectionsG,impedancesG);
 		
-	
+//	ch->calc_S();	
 	//temp = i->get_Type();
-	cout << ch->calc_S() << endl;  
+	cout << ch->get_Port_Scattering() << endl;  
 	
 	return 0;
 }
