@@ -14,7 +14,14 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-
+	
+	ofstream filestream;
+	filestream.open("test.csv");
+	filestream << "S11,S14,S17,S41,S44,S47,S71,S74,S77\n";	
+//	filestream.close();
+	//frequency sweep
+	for(int div = 1; div < 20; ++div){
+	float templength = (float)16.0/(2.0*div);
 //	vector<Port *> portsG;
 	vector<Impedance *> impedancesG;
 	vector<Intersection *> intersectionsG;
@@ -32,13 +39,12 @@ int main(int argc, char **argv)
 //	portsG.push_back(p1);
 //	portsG.push_back(p2);
 //	portsG.push_back(p3);
-	
 	Impedance *p1 = new Impedance((Impedance::IMPEDANCE_TYPES) 0, std::complex<float>(50.0,0),"P_1");
 	Impedance *p2 = new Impedance((Impedance::IMPEDANCE_TYPES) 0, std::complex<float>(50.0,0),"P_2");
 	Impedance *p3 = new Impedance((Impedance::IMPEDANCE_TYPES) 0, std::complex<float>(50.0,0),"P_3");
 
-	Impedance *i1 = new Impedance((Impedance::IMPEDANCE_TYPES) 2, std::complex<float>(71.0,0),0.25,"T_1"); //first tline
-	Impedance *i2 = new Impedance((Impedance::IMPEDANCE_TYPES) 2, std::complex<float>(71.0,0),0.25,"T_2"); //second tline
+	Impedance *i1 = new Impedance((Impedance::IMPEDANCE_TYPES) 2, std::complex<float>(71.0,0),templength,"T_1"); //first tline
+	Impedance *i2 = new Impedance((Impedance::IMPEDANCE_TYPES) 2, std::complex<float>(71.0,0),templength,"T_2"); //second tline
 	Impedance *i3 = new Impedance((Impedance::IMPEDANCE_TYPES) 1, std::complex<float>(100.0,0),"T_3"); //first tline
 		
 	//vector<Port *> ports;
@@ -92,7 +98,19 @@ int main(int argc, char **argv)
 		
 //	ch->calc_S();	
 	//temp = i->get_Type();
-	cout << ch->get_Port_Scattering() << endl;  
+	MatrixXcf R = ch->get_Port_Scattering_Abs();
+	cout << R << endl;  
+	for(int m = 0; m < R.rows(); ++m){
+                for(int n = 0; n < R.cols(); ++n){
+                        std::complex<float> j = R(m,n);
+                     //   Sabs(m,n) = std::abs(j);
+                      filestream << std::real(j) << ",";
+                }
+        }
 	
+	filestream << "\n";
+	
+	}
+	filestream.close();	
 	return 0;
 }

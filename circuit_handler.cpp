@@ -180,3 +180,28 @@ MatrixXcf Circuit_Handler::get_Port_Scattering(){
 	}
 	return Scatter;
 }
+
+MatrixXcf Circuit_Handler::get_Port_Scattering_Abs(){
+	MatrixXcf S(num_of_ports,num_of_ports);
+	MatrixXcf Sabs(num_of_ports,num_of_ports);
+
+	S = get_Port_Scattering();
+
+	//ofstream filestream;
+        //filestream.open("test.csv");
+        //filestream << "S11,S14,S17,S41,S44,S47,S71,S74,S77\n";
+
+	
+	for(int m = 0; m < S.rows(); ++m){
+		for(int n = 0; n < S.cols(); ++n){
+			std::complex<float> j = S(m,n);
+			Sabs(m,n) = std::abs(j);
+		//	filestream << std::abs(j) << ",";
+		}	
+	}
+	//filestream << "\n";
+	//filestream.close();	
+	
+	return Sabs;
+
+}

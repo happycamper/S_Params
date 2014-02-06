@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <map>
+#include <fstream>
 
 using Eigen::MatrixXcf;
 
@@ -48,6 +49,7 @@ public:
 	MatrixXcf calc_C();
 	MatrixXcf calc_S();
 	MatrixXcf get_Port_Scattering();
+	MatrixXcf get_Port_Scattering_Abs();
 
 	Circuit_Handler();
 	Circuit_Handler(vector<Intersection *>,vector<Impedance *>);
